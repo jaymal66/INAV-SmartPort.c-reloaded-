@@ -656,13 +656,13 @@ void handleSmartPortTelemetry(void)
 
 // ones column
 					// ARM states are either mutually exclusive or implied by an  other , 	room  to encode additional  mode states within the same ba
-                    if (!isArmingDisabled())
-                        tmpi = 1;    	// was tmpi += 1  
-                    else			 	// meaning ready to ARM
-                        tmpi = 2;    	// was tmpi += 2 
+                    			if (!isArmingDisabled())
+                        			tmpi = 1;    	// was tmpi += 1  
+                    			else			 	// meaning ready to ARM
+                        			tmpi = 2;    	// was tmpi += 2 
 
-                    if (ARMING_FLAG(ARMED))
-                        tmpi = 3;      	// was  tmpi += 4
+                    			if (ARMING_FLAG(ARMED))
+                        			tmpi = 3;      	// was  tmpi += 4
 					
 					
 					
@@ -670,11 +670,11 @@ void handleSmartPortTelemetry(void)
 // tens column
 					//   slot for mutually exclusive modes, allow to encode 10  modes within the available bandwidth
 					if (FLIGHT_MODE(ANGLE_MODE))
-                        tmpi = 10;
-                    if (FLIGHT_MODE(HORIZON_MODE))
-                        tmpi = 20;
-                    if (FLIGHT_MODE(PASSTHRU_MODE))
-                        tmpi = 30;									  
+                       				 tmpi = 10;
+                    			if (FLIGHT_MODE(HORIZON_MODE))
+                        			tmpi = 20;
+                    			if (FLIGHT_MODE(PASSTHRU_MODE))
+                        			tmpi = 30;									  
 					if (FLIGHT_MODE(HEADING_MODE))  // existing entry relocated here
 						tmpi = 40;
 					if (FLIGHT_MODE(NAV_LAUNCH_MODE))	// new entry post 1.7.3
@@ -695,7 +695,7 @@ void handleSmartPortTelemetry(void)
 						tmpi = 100;
 					                    
 					if (FLIGHT_MODE(HEADFREE_MODE))  // existing entry relocated here           
-                        tmpi = 200;
+                        			tmpi = 200;
                   
 					
 // thousands column 
@@ -703,10 +703,10 @@ void handleSmartPortTelemetry(void)
                     
 					
 					if (IS_RC_MODE_ACTIVE(BOXAUTOTRIM)) //new entry added post 1.7.3	
-                        tmpi = 1000;
+                        			tmpi = 1000;
 				
 					if (FLIGHT_MODE(AUTO_TUNE)) //new entry added post 1.7.3
-					    tmpi = 2000;
+					    	tmpi = 2000;
 					
 					if (IS_RC_MODE_ACTIVE(BOXHOMERESET))     //new entry added post 1.7.3
 						tmpi = 3000;
