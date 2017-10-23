@@ -1,5 +1,6 @@
-# INAV-SmartPort.c-reloaded-
-Extensive  Flight Modes  reporting  via SmartPort telemetry. 
+# INAV_smartport.c_reloaded
+Comprehensive Flight Modes  reporting  via SmartPort telemetry.
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 The aim here is to report via SmartPort telemetry the state of ALL flight modes enumerated in the INAV configurator.
 Thus users (MM and FW) aren't anymore limited to an arbitrary subset to pick those modes which they want to monitor on their FrSky TX.
 The following 6 additional modes are now included HOME RESET,NAV_LAUNCH,FLAPERON,TURN_ASSIST,AUTOTRIM and AUTO TUNE.
