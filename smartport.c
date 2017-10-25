@@ -652,8 +652,8 @@ void handleSmartPortTelemetry(void)
                 break;
             case FSSP_DATAID_T1         :
                 {
-                    uint32_t tmpi = 10000; 		// start off with at least one digit so the most significant 0 won't be cut off
-					uint32_t slotcol  = 0 ;	   //  slot collector
+                    	uint32_t tmpi = 10000; 		// start off with at least one digit so the most significant 0 won't be cut off
+			uint32_t slotcol  = 0 ;	   	//  slot collector
 // ones column slot
 			// ARM states are either mutually exclusive or implied by another ,room  to encode sequentially additional  mode states  within the same bandwidth
                     	if (!isArmingDisabled())
