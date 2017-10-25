@@ -669,7 +669,7 @@ void handleSmartPortTelemetry(void)
 					
 
 // tens column slot
-			//   Included here is a first subset of all modes KNOWN TO BE IN THE LIMIT OF THIS SLOT mutually exclusive 
+			//   Included here is a first subset of all modes ASSUMED TO BE IN THE LIMIT OF THIS SLOT mutually exclusive 
 			//   An attribute which allow to encode (sequentially) unequivocally and no loss of information  up to 10 modes/states within the available bandwidth 
 			//   Modes wrongly assumed to be in this slot exclusive of others need simply to be moved to another slot where this holds
 			slotcol = 0 ;
@@ -692,9 +692,9 @@ void handleSmartPortTelemetry(void)
 			
 // hundreds column slot        
 					
-			//  Included here  a second  subset of all modes KNOWN TO BE IN THE LIMIT OF THIS SLOT mutually exclusive 
+			//  Included here  a second  subset of all modes ASSUMED TO BE IN THE LIMIT OF THIS SLOT mutually exclusive 
 			//  An attribute which allow to encode (sequentially) unequivocally and loss of information up to 10 modes within the available bandwidth 
-			//  Modes wrongly assumed to be in this slot exclusive oh others need to be moved to another slot where the assumtion hols
+			//  Modes wrongly assumed to be in this slot exclusive oh others need simply to be moved to another slot where the assumtion holds
 			slotcol = 0;
 			if (FLIGHT_MODE(NAV_WP_MODE))  		// existing entry relocated here
 			slotcol = 100;			
