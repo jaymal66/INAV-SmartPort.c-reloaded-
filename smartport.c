@@ -746,9 +746,9 @@ void handleSmartPortTelemetry(void)
 
                     // thousands column (GPS fix status)
                     if (STATE(GPS_FIX))
-                        tmpi = 2000;
+                        tmpi += 2000;         \\ restored to help keep the focus on whats more important : the tmp1 changes         		
                     if (STATE(GPS_FIX_HOME))
-                        tmpi = 4000;
+                        tmpi += 4000;          \\ restored to help keep at this stage the focus on the tmp1 changes 
 					
                     smartPortSendPackage(id, tmpi);
     
