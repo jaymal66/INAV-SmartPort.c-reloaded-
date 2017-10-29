@@ -652,80 +652,88 @@ void handleSmartPortTelemetry(void)
                 break;
             case FSSP_DATAID_T1         :
                 {
-                    	uint32_t tmpi = 10000; 		// start off with at least one digit so the most significant 0 won't be cut off
-			uint32_t slotcol  = 0 ;	   	//  slot collector
-// ones column slot
-			// ARM states are either mutually exclusive or implied by another ,room  to encode sequentially additional  mode states  within the same bandwidth
-                    	if (!isArmingDisabled())
-                        slotcol = 1;    	// was tmpi += 1  
-                    	else			// meaning ready to ARM  , an absolute  precondition  to tip over to the ARMED state
-                        slotcol = 2;    	// was tmpi += 2 
+                    uint32_t tmpi = 10000; 		// start off with at least one digit so the most significant 0 won't be cut off
+					uint32_t slotcol  = 0 ;	   //  slot collector
 
-                    	if (ARMING_FLAG(ARMED)) // when active the mandatory precurse state READY TO ARM  becomes redundant and carries no information
-                        slotcol = 3;      	// was tmpi += 4  ...for backward compatility  slotcol can be set instead of 3  to 6
-					
-			tmpi += slotcol;				
-					
-					
-
-// tens column slot
-			//   Included here is a first subset of all modes ASSUMED TO BE IN THE LIMIT OF THIS SLOT mutually exclusive 
-			//   An attribute which allow to encode (sequentially) unequivocally and no loss of information  up to 10 modes/states within the available bandwidth 
-			//   Modes wrongly assumed to be in this slot exclusive of others need simply to be moved to another slot where this holds
-			slotcol = 0 ;
-			if (FLIGHT_MODE(ANGLE_MODE))
-                        slotcol = 10;
-                    	if (FLIGHT_MODE(HORIZON_MODE))
-                        slotcol = 20;
-                    	if (FLIGHT_MODE(PASSTHRU_MODE))
-                        slotcol = 30;									  
-			if (FLIGHT_MODE(HEADING_MODE))  	// existing entry relocated here
-			slotcol = 40;
-			if (FLIGHT_MODE(NAV_LAUNCH_MODE))	// new entry post 1.7.3
-			slotcol = 50;
-			if (FLIGHT_MODE(NAV_RTH_MODE)) 		// existing entry relocated here
-			slotcol = 60;			   
-			if (FLIGHT_MODE(FAILSAFE_MODE)) 	// existing entry relocated here
-			slotcol = 70; 
-			// if none of the above 0 remains unmodified and means ACCRO/RATE mode is active					
-			tmpi += slotcol; 			//commit  collected tens column value
-			
-// hundreds column slot        
-					
-			//  Included here  a second  subset of all modes ASSUMED TO BE IN THE LIMIT OF THIS SLOT mutually exclusive 
-			//  An attribute which allow to encode (sequentially) unequivocally and loss of information up to 10 modes within the available bandwidth 
-			//  Modes wrongly assumed to be in this slot exclusive oh others need simply to be moved to another slot where the assumtion holds
-			slotcol = 0;
-			if (FLIGHT_MODE(NAV_WP_MODE))  		// existing entry relocated here
-			slotcol = 100;			
-			if (FLIGHT_MODE(NAV_ALTHOLD_MODE)) 	// existing entry relocated here
-			slotcol = 200;
-			if (FLIGHT_MODE(NAV_POSHOLD_MODE)) 	// existing entry relocated here
-			slotcol = 300;					                    
-			if (FLIGHT_MODE(HEADFREE_MODE))  	// existing entry relocated here           
-                        slotcol = 400;                   
-			tmpi += slotcol;  			//commit collected  hundreds column value
-					
-// thousands column slot 
-			// slot for mutually exclusive temporary adjustments modes with room for more
+// ones column with mixed binary and sequentially encoding
+					// Slot for  ARM related modes states  (either mutually exclusive, or mandatory precursor state for ARM activation  , or preconditioned  by the ARM state  to become and remain  activated
+					// This allows to  pack one more mode  state  to only the 3 until now
                     
-			slotcol = 0;
-			if (IS_RC_MODE_ACTIVE(BOXAUTOTRIM)) 	//new entry added post 1.7.3	
-                        slotcol = 1000;				
-			if (FLIGHT_MODE(AUTO_TUNE)) 		//new entry added post 1.7.3
-			slotcol = 2000;					
-			if (IS_RC_MODE_ACTIVE(BOXHOMERESET))    //new entry added post 1.7.3
-			slotcol = 3000;					
-			tmpi += slotcol;			//commit collected thousands column value 
-			slotcol = 0;	
-			
-// ten thousands column slot
-			// slot for usually permanent and coexisting modes with no preconditions 
+					if (!isArmingDisabled())
+                        slotcol = 1 ;    	// was tmpi += 1  
+                    else			 	// meaning READY TO ARM  , a precondition  to activate the ARMED state
+                        slotcol = 2 ;    	// was tmpi += 2 
+						tmpi += slotcol;
+                    if (ARMING_FLAG(ARMED))   // when active the mandatory precursor  state READY TO ARM  can be been deemed to be  also active
+                        tmpi += 2;      	
+					if (IS_RC_MODE_ACTIVE(BOXBLACKBOX))    // NEW ENTRY which switched Blackbox logging on and off only when ARMED is active
+						tmpi += 4;  
 					
-			if (FLIGHT_MODE(TURN_ASSISTANT))     	//new entry  post 1.7.3
-			tmpi += 10000;
-			if (FLIGHT_MODE(FLAPERON))		// new entry  post 1.7.3
-			tmpi += 20000;			
+						
+					
+
+// tens column with sequential encoding
+					//   Included here is a subset of modes KNOWN TO BE IN AT ANY TIME  mutually exclusive of each other
+					//   An attribute which allow to encode (sequentially) unequivocally and no loss of information  up to 10 modes/states within the available bandwidth 
+					
+					slotcol = 0 ;
+					if (FLIGHT_MODE(ANGLE_MODE))
+						slotcol = 10;
+                    if (FLIGHT_MODE(HORIZON_MODE))
+                        slotcol = 20;
+                    if (FLIGHT_MODE(PASSTHRU_MODE))
+                        slotcol = 30;									  
+					if (FLIGHT_MODE(NAV_LAUNCH_MODE))	// NEW ENTRY 
+						slotcol = 40;
+					if (FLIGHT_MODE(NAV_RTH_MODE)) // existing entry relocated here
+						slotcol = 50;			   
+					if (FLIGHT_MODE(FAILSAFE_MODE)) // existing entry relocated here
+						slotcol = 50; 
+					// if none of the above 0 the default mode  ACCRO/RATE mode is active
+					
+					tmpi += slotcol; //commit  collected tens column value
+
+// hundreds column binary coded   untouched   
+					
+					//  slot for flight modes being possibly active at the same time in this slot and also in other slots
+					
+					if (FLIGHT_MODE(HEADING_MODE))  // existing entry relocated here
+						tmpi += 100;			
+					if (FLIGHT_MODE(NAV_ALTHOLD_MODE))  // existing entry relocated here
+						tmpi += 200;					                    
+					if (FLIGHT_MODE(HEADFREE_MODE))  	// existing entry relocated here           
+                        tmpi += 400;
+                   
+				   					
+// thousands column sequentially coded
+					// slot for short lived  adjustments modes  making no  sense to have active at the same time ... with room for more
+                    
+					slotcol = 0;
+					if (IS_RC_MODE_ACTIVE(BOXAUTOTRIM)) //NEW ENTRY
+                        slotcol = 1000;
+				
+					if (FLIGHT_MODE(AUTO_TUNE)) // entry  added with 1.8 relocated here
+					    slotcol = 2000;
+					
+					if (IS_RC_MODE_ACTIVE(BOXHOMERESET))     // entry added with  1.8 relocated here
+						slotcol = 3000;
+					
+					if (IS_RC_MODE_ACTIVE(BOXHEADADJ))		//NEW ENTRY
+						slotcol = 4000;
+					
+					tmpi += slotcol;	//commit collected thousands column value 
+					slotcol = 0;	 
+// ten thousands column bynary coded
+					// slot for usually permanent modes with no preconditions ,room for more modes to be reported via SmartPort telemetry
+					
+					if (FLIGHT_MODE(TURN_ASSISTANT))    // NEW ENTRY 
+						tmpi += 10000;			
+					
+					if (FLIGHT_MODE(FLAPERON))			//  entry  added with 1.8 
+						tmpi += 20000;
+
+					if (IS_RC_MODE_ACTIVE(BOXCAMSTAB))	// NEW ENTRY
+						tmpi += 40000;
 					
 
 					
@@ -737,7 +745,7 @@ void handleSmartPortTelemetry(void)
                 if (sensors(SENSOR_GPS)) {
 #ifdef GPS
                     uint32_t tmpi = 0;
-
+					
                     // ones and tens columns (# of satellites 0 - 99)
                     tmpi += constrain(gpsSol.numSat, 0, 99);
 
@@ -745,11 +753,15 @@ void handleSmartPortTelemetry(void)
                     tmpi += (9 - constrain(gpsSol.hdop / 1000, 0, 9)) * 100;
 
                     // thousands column (GPS fix status)
+					   // GPS has no FIX
                     if (STATE(GPS_FIX))
-                        tmpi += 2000;         \\ restored to help keep the focus on whats more important : the tmp1 changes         		
+                        tmpi += 1000;
                     if (STATE(GPS_FIX_HOME))
-                        tmpi += 4000;          \\ restored to help keep at this stage the focus on the tmp1 changes 
-					
+                        tmpi += 2000;
+					if (FLIGHT_MODE(NAV_POSHOLD_MODE)) 	// existing entry relocated here since  preconditioned by the GPS status
+						tmpi += 4000;
+					// When by exit tpmi  is 0 then GPS ha nos FIX
+						
                     smartPortSendPackage(id, tmpi);
     
 #endif
